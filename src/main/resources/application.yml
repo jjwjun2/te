@@ -1,0 +1,28 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: 본인의 구글 계정 @gmail.com
+    password: 본인의 구글 계정 비밀번호
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  datasource:
+    url: jdbc:mariadb://localhost:3306/mariadb
+    driverClassName: org.mariadb.jdbc.Driver
+    username: jun
+    password: tjgusskavys8*
+  jpa:
+    open-in-view: true
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+UserController:
+  signin: Authenticates user and returns its JWT token.
+  signup: Creates user and returns its JWT token
+  delete: Deletes specific user by username
+  search: Returns specific user by username
+  me: Returns current user's data
+
