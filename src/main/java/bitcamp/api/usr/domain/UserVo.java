@@ -19,7 +19,7 @@ public class UserVo {
 
     @NotNull
     @Column(name = "usr_name")
-    private String usrName;
+    private String usrName; //
 
     @NotNull
     @Column(name = "usr_nickname")
