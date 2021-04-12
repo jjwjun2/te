@@ -18,14 +18,16 @@ public class UserDto {
 
     @NotEmpty
     @NotNull
-    @Pattern(regexp = "([\\w가-힣]*){2,17}$")
+    @Pattern(regexp = "([\\w가-힣]*){2,10}$")
     private String usrName;
 
-    @Pattern(regexp = "[\\a-zA-Z0-9]*[\\w-]{2,15}$")
+    @NotEmpty
+    @NotNull
     private String usrEmail;
 
     @NotNull
     @NotEmpty
+    @Pattern(regexp = "([\\w가-힣]*){2,17}$")
     private String password;
     private int usrAge;
     private String usrCity;

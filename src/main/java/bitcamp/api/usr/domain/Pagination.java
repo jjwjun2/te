@@ -1,6 +1,7 @@
 package bitcamp.api.usr.domain;
 
 import lombok.Data;
+
 @Data
 public class Pagination {
     public final int BLOCK_SIZE = 10;
@@ -20,11 +21,12 @@ public class Pagination {
     private boolean hasPrev;
     private boolean hasNext;
 
-    public Pagination() {}
+    public Pagination() {
+    }
 
     public Pagination(int pageSize, int pageNum, int count) {
-        this.pageSize = (pageSize==0) ? 10: pageSize;
-        this.pageNum = pageNum ;
+        this.pageSize = (pageSize == 0) ? 10 : pageSize;
+        this.pageNum = pageNum;
         this.totalCount = count;
         this.pageCount = (totalCount % pageSize != 0) ? totalCount / pageSize + 1 : totalCount / pageSize;
         this.blockCount = (pageCount % BLOCK_SIZE != 0) ? pageCount / BLOCK_SIZE + 1 : pageCount / BLOCK_SIZE;

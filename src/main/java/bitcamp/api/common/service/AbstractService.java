@@ -1,7 +1,5 @@
 package bitcamp.api.common.service;
 
-import bitcamp.api.usr.domain.UserDataDto;
-
 import java.util.List;
 import java.util.Optional;
 

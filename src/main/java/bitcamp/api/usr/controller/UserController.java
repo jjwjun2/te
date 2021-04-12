@@ -115,11 +115,5 @@ public class UserController {
     }
 
 
-    @PostMapping("/admin/statistic")
-    public ResponseEntity<UserDataDto> userStatistic(@PathVariable UserDataDto us, @RequestBody UserDataDto userDataDto) {
-        logger.info("Send user data= " + userDataDto.toString());
-        return ResponseEntity.ok(userService.userStatistic(userDataDto));
-    }
-
 
 }
