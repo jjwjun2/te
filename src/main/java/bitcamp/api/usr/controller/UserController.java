@@ -39,15 +39,17 @@ public class UserController {
         return ResponseEntity.ok(userService.signin(userDto.getUsername(), userDto.getPassword()));
     }
 
-    @PostMapping("/signin")
-    @ApiOperation(value = "${UserController.signin}")
-    @ApiResponses(value = {
-            @ApiResponse(code = 400, message = "Something went wrong"),
-            @ApiResponse(code = 422, message = "Invalid username/password supplied")})
-    public ResponseEntity<String> signupAdmin(@Valid @RequestBody UserDto userDto) {
-        logger.info("User Login Info: " + userDto.toString());
-        System.out.println("=========================");
-        return ResponseEntity.ok(userService.signup(modelMapper.map(userDto, UserDto.class)));
+
+
+    @PostMapping("/signupadmin")
+    @ApiOperation(value = "${UserController.signup}")
+    @ApiResponses(value = { //
+            @ApiResponse(code = 400, message = "Something went wrong"), //
+            @ApiResponse(code = 403, message = "Access denied"), //
+            @ApiResponse(code = 422, message = "Username is already in use")})
+    public ResponseEntity<String> signupAdmin(@ApiParam("Signup User") @RequestBody UserDto user) throws Exception {
+        logger.info("User Join Info:" + user.toString());
+        return ResponseEntity.ok(userService.signupAdmin(modelMapper.map(user, UserDto.class)));
     }
 
 
