@@ -71,11 +71,6 @@ public class UserServiceImpl extends AbstractService<UserVo> implements UserServ
 
 
     @Override
-    public List<UserVo> findUserDynamicSearch(UserSearchCondition keyword) {
-        return userRepository.userSearch(keyword);
-    }
-
-    @Override
     public UserVo usrDetail(Long usrNo) {
         System.out.println("findbyId=" + findById(usrNo).get().toString());
         return userRepository.findById(usrNo).get();
@@ -120,17 +115,6 @@ public class UserServiceImpl extends AbstractService<UserVo> implements UserServ
     }
 
 
-    public UserSignDto allUserInfo(UserVo userVo) {
-        UserSignDto userSignDto = new UserSignDto();
-        userVo = userRepository.getOne(userVo.getUsrNo());
-        userSignDto.setBoards(userRepository.userSignDtoBoard());
-        userSignDto.setPayments(userRepository.userSignDtoPayment());
-        userSignDto.setReceivers(userRepository.userSigninRece());
-        userSignDto.setUser(userVo);
-        return userSignDto;
-    }
-
-
     @Override
     public Map<String, Object> signin(String username, String password) {
         try {
@@ -165,20 +149,21 @@ public class UserServiceImpl extends AbstractService<UserVo> implements UserServ
         }
     }
 
-
     @Override
-    public UserDataDto userStatistic(UserDataDto userDataDto) {
-        System.out.println("userDataDto= " + userDataDto.toString());
-        userDataDto.setAges10s((int) userRepository.age10sData());
-        userDataDto.setAges20s((int) userRepository.age20sData());
-        userDataDto.setAges30s((int) userRepository.age30sData());
-        userDataDto.setAges40s((int) userRepository.age40sData());
-        userDataDto.setAges50s((int) userRepository.age50sData());
-        userDataDto.setAges60s((int) userRepository.age60sData());
-        userDataDto.setAgesOver70s((int) userRepository.ageOver70sData());
-        userDataDto.setManData((int) userRepository.manData());
-        userDataDto.setManData((int) userRepository.womanData());
-        return userDataDto;
+    public String signupAdmin(UserDto user) {
+        logger.info("====================Admin Login====================");
+        if (!checkDuplicateId(user.getUsername())) {
+            user.setUsername(user.getUsername());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setUsrEmail(user.getUsrEmail());
+            user.setUsrPhone(user.getUsrPhone());
+            user.setRoles(Arrays.asList(Role.ADMIN));
+            addUser(user);
+            return provider.createToken(user.getUsername(), user.getRoles());
+        } else {
+            throw new SecurityRuntimeException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
     }
 
 
@@ -271,6 +256,13 @@ public class UserServiceImpl extends AbstractService<UserVo> implements UserServ
         return addUser(userDto);
     }
 
-    @Override public boolean existsById(long id) { return false; }
-    @Override public UserSignDto signinUser(String username, String password) { return null; }
+    @Override
+    public boolean existsById(long id) {
+        return false;
+    }
+
+    @Override
+    public UserSignDto signinUser(String username, String password) {
+        return null;
+    }
 }

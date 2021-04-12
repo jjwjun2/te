@@ -39,6 +39,17 @@ public class UserController {
         return ResponseEntity.ok(userService.signin(userDto.getUsername(), userDto.getPassword()));
     }
 
+    @PostMapping("/signin")
+    @ApiOperation(value = "${UserController.signin}")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Something went wrong"),
+            @ApiResponse(code = 422, message = "Invalid username/password supplied")})
+    public ResponseEntity<String> signupAdmin(@Valid @RequestBody UserDto userDto) {
+        logger.info("User Login Info: " + userDto.toString());
+        System.out.println("=========================");
+        return ResponseEntity.ok(userService.signup(modelMapper.map(userDto, UserDto.class)));
+    }
+
 
     @PostMapping("/signup")
     @ApiOperation(value = "${UserController.signup}")
