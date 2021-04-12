@@ -1,13 +1,11 @@
 package bitcamp.api.category.domain;
 
-import lombok.Data;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import lombok.Data;
 
-@Component
-@Data
-@Lazy
+@Component @Data @Lazy
 public class CategoryDto {
-    private long ctgNo;
-    private String ctgName;
+	private long ctgNo;
+	private String ctgName;
 }

@@ -1,41 +1,34 @@
 package bitcamp.api.usr.service;
 
-
 import bitcamp.api.common.service.AbstractService;
 import bitcamp.api.security.domain.SecurityProvider;
 import bitcamp.api.security.exception.SecurityRuntimeException;
-import bitcamp.api.usr.domain.Role;
-import bitcamp.api.usr.domain.UserVo;
+import bitcamp.api.usr.domain.*;
 import bitcamp.api.usr.repository.UserRepository;
-import lombok.Getter;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
+
 
 @RequiredArgsConstructor
 @Service
-@Getter
 public class UserServiceImpl extends AbstractService<UserVo> implements UserService {
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SecurityProvider provider;
     private final AuthenticationManager manager;
-    private final JavaMailSender javaMailSender;
 
-
-    // Read(One)
     @Override
     public UserVo search(String username) {
         UserVo user = userRepository.findByUsername(username);
@@ -45,28 +38,25 @@ public class UserServiceImpl extends AbstractService<UserVo> implements UserServ
         return user;
     }
 
-
-    // Read(List)
     @Override
     public List<UserVo> findUsersByName(String name) {
         return userRepository.findUserByName(name);
     }
 
-    // Read(All)
+
     @Override
     public List<UserVo> findAllUser() {
         return userRepository.findAllUser();
     }
 
-    // Read(All)
+
     @Override
     public List<UserVo> findAll() {
         return userRepository.findAll()
                 .stream()
-                .sorted(Comparator.comparing(UserVo::getUsrName).reversed())
+                .sorted(Comparator.comparing(UserVo::getUsrNo))
                 .collect(Collectors.toList());
     }
-
 
     // Read
     @Override
@@ -75,82 +65,121 @@ public class UserServiceImpl extends AbstractService<UserVo> implements UserServ
     }
 
     @Override
-    public void sendMail(String to, String sub, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(sub);
-        message.setText(text);
-        javaMailSender.send(message);
+    public Map<String, Object> pagenationtest(UserPageDto userPageDto) {
+        return null;
+    }
+
+
+    @Override
+    public List<UserVo> findUserDynamicSearch(UserSearchCondition keyword) {
+        return userRepository.userSearch(keyword);
+    }
+
+    @Override
+    public UserVo usrDetail(Long usrNo) {
+        System.out.println("findbyId=" + findById(usrNo).get().toString());
+        return userRepository.findById(usrNo).get();
+    }
+
+    @Override
+    public Map<String, Object> paging(Pagination pagination, Optional<Integer> userId) {
+        Map<String, Object> map = new HashMap<>();
+        List<UserVo> result = userRepository.findAll();
+        int pageSize = pagination.getPageSize();
+        int currentPage = pagination.getPageNum();
+        int totalCount = (int) userRepository.count();
+        System.out.println("pagesize= " + pageSize);
+        System.out.println("currentPage= " + currentPage);
+        System.out.println("totalCount= " + totalCount);
+        Pagination page = new Pagination(pageSize, currentPage, totalCount);
+        map.put("paging", page);
+        map.put("user", result);
+        return map;
     }
 
     // Update
     @Override
     public long save(UserVo userVo) {
+        Optional<UserVo> user = userRepository.findUserById(userVo.getUsername());
+        if (user.isPresent()) {
+
+        }
         return userRepository.save(userVo) != null ? 1 : 0;
+    }
+
+
+    public void idCheck() {
     }
 
     // Delete
     @Override
     public long delete(UserVo userVo) {
-        System.out.println(userVo.toString() + "회원 삭제.");
+        System.out.println(userVo.toString() + "User delete.");
         userRepository.delete(userVo);
         return findById(userVo.getUsrNo()).isPresent() ? 1 : 0;
     }
 
 
+    public UserSignDto allUserInfo(UserVo userVo) {
+        UserSignDto userSignDto = new UserSignDto();
+        userVo = userRepository.getOne(userVo.getUsrNo());
+        userSignDto.setBoards(userRepository.userSignDtoBoard());
+        userSignDto.setPayments(userRepository.userSignDtoPayment());
+        userSignDto.setReceivers(userRepository.userSigninRece());
+        userSignDto.setUser(userVo);
+        return userSignDto;
+    }
+
 
     @Override
-    public String signin(String username, String password) {
+    public Map<String, Object> signin(String username, String password) {
         try {
-            //	manager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            Map<String, Object> map = new HashMap<>();
             System.out.println("ID: " + username);
-            String tok = provider.createToken(username, userRepository.findByUsername(username).getRoles());
+            UserVo user = userRepository.findByUsername(username);
+            List<Role> roles = user.getRoles();
+            String tok = provider.createToken(username, roles);
+            map.put("token", provider.createToken(username, roles));
+            map.put("user", user);
             System.out.println("token :: " + tok);
-            return tok;
+            return map;
         } catch (AuthenticationException e) {
             throw new SecurityRuntimeException("Invalid username/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
+
     @Override
-    public String signup(UserVo user) {
-
-        boolean nickname;
-
-        if (!userRepository.existsByUsername(user.getUsername())) {
-            // 아이디, 비밀번호, 닉네임, 이메일, 전화번호, 레벨
-
-            // 닉네임
-            checkDuplicateNickname(user.getUsrNickname());
-            user.setUsrNickname(user.getUsrNickname());
-
-            // 이메일
-            user.setUsrEmail(user.getUsrEmail());
-
-            // 전화번호
-            user.setUsrPhone(user.getUsrPhone());
-
-            // 비밀번호
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-            // 권한
-            List<Role> list = new ArrayList<>();
-            list.add(Role.USER);
-            user.setRoles(list);
-            userRepository.save(user);
-            return provider.createToken(user.getUsername(), user.getRoles());
+    public String signup(UserDto userDto) {
+        logger.info("====================Admin Login====================");
+        if (!checkDuplicateId(userDto.getUsername())) {
+            userDto.setUsername(userDto.getUsername());
+            userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+            userDto.setUsrEmail(userDto.getUsrEmail());
+            userDto.setUsrPhone(userDto.getUsrPhone());
+            userDto.setRoles(Arrays.asList(Role.USER));
+            addUser(userDto);
+            return provider.createToken(userDto.getUsername(), userDto.getRoles());
         } else {
             throw new SecurityRuntimeException("Username is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
 
-
-
-
-
-
-
+    @Override
+    public UserDataDto userStatistic(UserDataDto userDataDto) {
+        System.out.println("userDataDto= " + userDataDto.toString());
+        userDataDto.setAges10s((int) userRepository.age10sData());
+        userDataDto.setAges20s((int) userRepository.age20sData());
+        userDataDto.setAges30s((int) userRepository.age30sData());
+        userDataDto.setAges40s((int) userRepository.age40sData());
+        userDataDto.setAges50s((int) userRepository.age50sData());
+        userDataDto.setAges60s((int) userRepository.age60sData());
+        userDataDto.setAgesOver70s((int) userRepository.ageOver70sData());
+        userDataDto.setManData((int) userRepository.manData());
+        userDataDto.setManData((int) userRepository.womanData());
+        return userDataDto;
+    }
 
 
     @Override
@@ -158,24 +187,41 @@ public class UserServiceImpl extends AbstractService<UserVo> implements UserServ
         if (userId != null) {
             return userRepository.checkDuplicateId(userId);
         }
-        return false;
+        throw new SecurityRuntimeException("This ID already exists.", HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
 
     @Override
-    public boolean checkDuplicateNickname(String userNickname) {
-        if (userNickname != null) {
-            return userRepository.checkDuplicateNickname(userNickname);
+    public boolean checkDuplicateEmail(String usrMail) {
+        if (usrMail != null) {
+            return userRepository.checkDuplicateId(usrMail);
         }
-        return false;
+        throw new SecurityRuntimeException("This email is a duplicate email.", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 
+    @Override
+    public void delete(String username) {
+        userRepository.deleteByUsername(username);
+    }
 
-    @Override public void delete(String username) { userRepository.deleteByUsername(username); }
-    @Override public long count() { return 0; }
-    @Override public Optional<UserVo> findById(long id) { return null; }
-    @Override public boolean existsById(long id) { return false; }
-    @Override public UserVo getOne(long id) { return userRepository.getOne(id); }
+
+    @Override
+    public long count() {
+        return userRepository.count();
+    }
+
+
+    @Override
+    public Optional<UserVo> findById(long id) {
+        return userRepository.findById(id);
+    }
+
+
+    @Override
+    public UserVo getOne(long id) {
+        return userRepository.getOne(id);
+    }
 
     @Override
     public UserVo whoami(HttpServletRequest req) {
@@ -186,4 +232,45 @@ public class UserServiceImpl extends AbstractService<UserVo> implements UserServ
     public String refresh(String username) {
         return provider.createToken(username, userRepository.findByUsername(username).getRoles());
     }
+
+
+    @Override
+    public UserVo addUser(UserDto userDto) {
+        UserVo userVo = new UserVo.UserBuilder(userDto).build();
+        userRepository.save(userVo);
+        return userVo;
+    }
+
+    @Override
+    public UserVo delete(UserDto userDto) {
+        UserVo userVo = new UserVo.UserBuilder(userDto).build();
+        userRepository.delete(userVo);
+        return userVo;
+    }
+
+    @Override
+    public Long deleteUser(UserVo userDto) {
+        System.out.println("userDTO= " + userDto.toString());
+        deleteUser(userDto);
+        return findById(userDto.getUsrNo()).isEmpty() ? 1L : 0L;
+    }
+
+
+    @Override
+    public boolean checkPassword(String password) {
+        if (password != null) {
+            return userRepository.findPassword(password);
+        }
+        throw new SecurityRuntimeException("The password does not match.", HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+
+    @Override
+    public UserVo passwordUpdate(UserDto userDto) {
+        userDto.setPassword(userDto.getPassword());
+        return addUser(userDto);
+    }
+
+    @Override public boolean existsById(long id) { return false; }
+    @Override public UserSignDto signinUser(String username, String password) { return null; }
 }

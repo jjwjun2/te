@@ -19,4 +19,5 @@ public class SecurityAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         handlerExceptionResolver.resolveException(request, response, null, accessDeniedException);
     }
+
 }

@@ -3,77 +3,54 @@ package bitcamp.api.usr.domain;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
-@Component
 @Data
+@ToString
 public class UserDto {
 
     private static final long serialVersionUID = 1L;
 
     private Long usrNo;
 
-    @NotEmpty @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9][\\w]{7,17}$", message = "8자리 이상 18자리 이하의 숫자만 입력가능합니다.")
-    private String username;    // 아이디
+    @NotEmpty
+    @NotNull
+    @Pattern(regexp = "([\\w가-힣]*){2,17}$")
+    private String usrName;
 
-    @NotEmpty @NotNull
-    @Pattern(regexp = "^[a-zA-Z가-힣]{2,12}$")
-    private String usrName;     // 이름
+    @Pattern(regexp = "[\\a-zA-Z0-9]*[\\w-]{2,15}$")
+    private String usrEmail;
 
-
-    @NotEmpty @NotNull
-    private String usrEmail;    // 이메일
-
-
-    @NotEmpty @NotNull
-    @Pattern(regexp = "[\\.가-힣]*[\\w-]{4,17}$")
-    private String password;    // 비밀번호
-
-
-    @NotEmpty @NotNull
-    @Pattern(regexp = "^01([0|1|6|7|8|9])([0-9]{3,4})([0-9]{4})$")
-    private String usrPhone;    // 전화번호
-
-    @NotEmpty @NotNull
-    @Pattern(regexp = "^[\\w가-힣]{2,15}$", message = "2자리 이상 15 이내의 글자를 입력해주세요.")
-    private String usrNickname; // 닉네임
-
-
-    //	@ApiModelProperty(position = 3)
-    List<Role> roles;       // 레벨
-
-    private String usrAges;
+    @NotNull
+    @NotEmpty
+    private String password;
+    private int usrAge;
     private String usrCity;
+
+
     private String usrGender;
+
+    @NotNull
+    @NotEmpty
+    private String usrPhone;
+
+    @NotNull
+    @NotEmpty
+    @Pattern(regexp = "^[a-zA-Z0-9][\\w]{7,15}$", message = "8자리 이상 18자리 이하의 숫자만 입력가능합니다.")
+    private String username;
     private String usrAddr;
+    private List<Role> roles;
+
+    public UserDto() {}
 
 
-    public UserVo toEntity() {
-        return UserVo.builder()
-                .usrName(usrName)
-                .username(username)
-                .usrNickname(usrNickname)
-                .usrEmail(usrEmail)
-                .usrPhone(usrPhone)
-                .build();
+    public UserDto(String usrName, int usrAge, String usrGender) {
+        this.usrName = usrName;
+        this.usrAge = usrAge;
+        this.usrGender = usrGender;
     }
-
-/*
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		UserDto that = (UserDto) o;
-		return Objects.equals(usrNo, that.usrNo);
-	}
-	@Override
-	public int hashCode() {
-		return Objects.hash(usrNo);
-	}
-*/
-
 
 }

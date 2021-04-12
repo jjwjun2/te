@@ -7,7 +7,6 @@ import bitcamp.api.common.service.AbstractService;
 import bitcamp.api.pay.domain.Payment;
 import bitcamp.api.pay.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,6 +18,18 @@ public class PaymentServiceImpl extends AbstractService<Payment>
     @Override
     public long save(Payment t) {
         return (repo.save(t) != null) ? 1 : 0;
+    }
+
+    @Override
+    public String delete(long id) {
+        repo.deleteById(id);
+        return "SUCCESS";
+    }
+
+    @Override
+    public String edit(Payment t) {
+        Payment pay = repo.save(t);
+        return (pay != null) ? "SUCCESS" : "FAILURE";
     }
 
     @Override

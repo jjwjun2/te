@@ -1,9 +1,9 @@
 plugins {
-	id 'org.springframework.boot' version '2.4.4'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
-	id 'war'
-	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+    id 'org.springframework.boot' version '2.4.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'war'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'bitcamp'
@@ -11,58 +11,74 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-	compile group: 'com.h2database', name: 'h2', version: '1.4.199'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.2.5.RELEASE'
-	compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.2.5.RELEASE'
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-web-services', version: '2.2.5.RELEASE'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    compile group: 'com.h2database', name: 'h2', version: '1.4.199'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.2.5.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.2.5.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web-services', version: '2.2.5.RELEASE'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    implementation group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.4.29.Final'
+    testImplementation group: 'org.hamcrest', name: 'hamcrest-core', version: '2.2'
+    testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.2'
+
 // https://mvnrepository.com/artifact/javax.validation/validation-api
-	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
 
-	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 
 
-	compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.5.4'
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.2.5.RELEASE'
+    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.5.4'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.2.5.RELEASE'
 
-	compile group: 'com.querydsl', name: 'querydsl-jpa', version: '4.3.0'
-	compile group: 'com.querydsl', name: 'querydsl-apt', version: '4.3.0'
-	compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.744'
-	compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.4.2'
-	compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.4.2'
+    compile group: 'com.querydsl', name: 'querydsl-jpa', version: '4.3.0'
+    compile group: 'com.querydsl', name: 'querydsl-apt', version: '4.3.0'
+    compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.744'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.4.2'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.4.2'
 
-	implementation group: 'org.webjars.npm', name: 'jsonwebtoken', version: '8.5.1'
-	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.4.3'
+    implementation group: 'org.webjars.npm', name: 'jsonwebtoken', version: '8.5.1'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.4.2'
+    implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.4.1.RELEASE'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.1'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.1'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 
-	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+//    https://www.javaer101.com/ko/article/6385646.html
+
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
-
+// jwt형식으로 쿠키에 저장해서 서버에 뿌리는 것. 서버
 def querydslDir = "$buildDir/generated/querydsl"
 querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
+    jpa = true
+    querydslSourcesDir = querydslDir
 }
 sourceSets {
-	main.java.srcDir querydslDir
+    main.java.srcDir querydslDir
 }
 configurations {
-	querydsl.extendsFrom compileClasspath
+    querydsl.extendsFrom compileClasspath
 }
 compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
+    options.annotationProcessorPath = configurations.querydsl
 }

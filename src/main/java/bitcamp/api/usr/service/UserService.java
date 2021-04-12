@@ -1,33 +1,35 @@
 package bitcamp.api.usr.service;
 
-import bitcamp.api.usr.domain.UserDto;
-import bitcamp.api.usr.domain.UserVo;
+import bitcamp.api.usr.domain.*;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import org.springframework.data.domain.Pageable;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserService {
-    // security default method
-    String signin(String username, String password);
-    String signup(UserVo user);
+    UserSignDto signinUser(String username, String password);
+    String signup(UserDto user);
     void delete(String username);
     UserVo whoami(HttpServletRequest req);
     String refresh(String username);
-
-    // 4.상제 사용자 보기
+    Map<String, Object> paging(Pagination pagination, Optional<Integer> userId);
+    Map<String,Object> signin(String username, String password);
     UserVo search(String username);
-
-    // 2.아이디 중복체크
+    UserDataDto userStatistic(UserDataDto userDataDto);
+    boolean checkDuplicateEmail(String usrMail);
+    boolean checkPassword(String password);
     boolean checkDuplicateId(String userId);
-    boolean checkDuplicateNickname(String userId);
-
-    // 3.이름으로 사용자찾기
+    Long deleteUser(UserVo userDto);
     List<UserVo> findUsersByName(String name);
-
-    // 4-1.전체 유저보기
     List<UserVo> findAllUser();
     Optional<UserVo> updateProfile(UserVo userVo);
-    void sendMail(String to,String sub, String text);
-
-
+    Map<String, Object> pagenationtest(UserPageDto userPageDto);
+    List<UserVo> findUserDynamicSearch(UserSearchCondition keyword);
+    UserVo passwordUpdate(UserDto userDto);
+    UserVo usrDetail(Long usrNo);
+    UserVo delete(UserDto userDto);
+    UserVo addUser(UserDto userDto);
 }

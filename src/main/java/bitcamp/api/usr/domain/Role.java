@@ -1,9 +1,7 @@
 package bitcamp.api.usr.domain;
 
 import lombok.Getter;
-
 import java.util.Arrays;
-
 import org.springframework.security.core.GrantedAuthority;
 
 @Getter
@@ -12,6 +10,7 @@ public enum Role implements GrantedAuthority {
 
     private String code;
     private String description;
+
 
     Role(String code, String description) {
         this.code = code;
@@ -25,4 +24,5 @@ public enum Role implements GrantedAuthority {
     public String getAuthority() {
         return name();
     }
+
 }

@@ -5,10 +5,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
-@Component
-@Data
-@Lazy
+@Component @Data @Lazy
 public class ProductDto {
-    private long prdNo;
-    private String prdName, ctgName, prdImg, prdPrice, prdInv;
+	private long prdNo;
+	private String prdName, ctgName, prdImg, prdPrice, prdInv;
 }
